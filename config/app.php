@@ -15,7 +15,6 @@ return [
         Illuminate\Log\LogServiceProvider::class,
         Illuminate\Filesystem\FilesystemServiceProvider::class,
         Illuminate\Cache\CacheServiceProvider::class,
-        Illuminate\Http\HttpServiceProvider::class,
         App\Providers\AppServiceProvider::class,
     ],
 

@@ -3,3 +3,4 @@
 .phpunit.result.cache
 bootstrap/cache/*.php
 storage/*.key
+storage/logs/*
