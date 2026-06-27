@@ -44,12 +44,14 @@ class FetchAttendanceLogs extends Command
         $this->info("Connecting to ZKTeco device at {$ip}:{$port} ...");
 
         $zk = new ZKTeco($ip, $port);
+        $connected = false;
 
         try {
             if (! $zk->connect()) {
                 $this->error('Failed to connect to the ZKTeco device. Check IP/port and network connectivity.');
                 return self::FAILURE;
             }
+            $connected = true;
 
             $this->info('Connected successfully.');
 
@@ -64,7 +66,6 @@ class FetchAttendanceLogs extends Command
 
             if (empty($logs)) {
                 $this->warn('No attendance logs found on the device.');
-                $zk->disconnect();
                 return self::SUCCESS;
             }
 
@@ -74,7 +75,6 @@ class FetchAttendanceLogs extends Command
 
             if (empty($filtered)) {
                 $this->warn('No logs match the specified date filters.');
-                $zk->disconnect();
                 return self::SUCCESS;
             }
 
@@ -87,7 +87,6 @@ class FetchAttendanceLogs extends Command
             if ($isDryRun) {
                 $this->info('Dry-run mode — payload that would be sent:');
                 $this->line(json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-                $zk->disconnect();
                 return self::SUCCESS;
             }
 
@@ -123,7 +122,6 @@ class FetchAttendanceLogs extends Command
                     'body'      => $response->body(),
                 ]);
 
-                $zk->disconnect();
                 return self::FAILURE;
             }
         } catch (\Exception $e) {
@@ -136,7 +134,9 @@ class FetchAttendanceLogs extends Command
 
             return self::FAILURE;
         } finally {
-            $zk->disconnect();
+            if ($connected) {
+                $zk->disconnect();
+            }
         }
 
         $this->info('Done.');
